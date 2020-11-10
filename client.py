@@ -9,6 +9,7 @@ from lib.endpoint import EndPoint
 class Client(EndPoint):
     def __init__(self):
         super().__init__()
+        self.logged_in = False  # Should be false during production
         self.user = dict(
             user_id="",
             user_name="",
@@ -60,10 +61,56 @@ class Client(EndPoint):
             print(f"[-] Error : {error}")
             sys.exit()
 
+    def authServerConnection(self):
+        if not self.logged_in:
+            print(f"[-] Unidentified user @ {self.HOST}:{self.PORT}! Initiating authentication procedure...")
+
+            login_msg = dict(
+                login_error= "Unidentified user! Please login to continue"
+            )
+            self.sendMsg(self.client_socket, login_msg)
+
+        while not self.logged_in:
+            auth_credentials: dict = self.receiveMsg(self.client_socket)
+            user_logged_in = self.loginUser(auth_credentials)
+            if user_logged_in:
+                self.logged_in = True
+                break
+
+    def loginUser(self, user):
+        user_id: str = user['user_id']
+        user_name: str = user['user_name']
+        user_passwd: str = user['user_password']
+        user_password: bytes = user_passwd.encode("UTF-8")
+
+        db_user: dict = self.redis_db.selectExistingUser(user_name)
+
+        if db_user:
+            if db_user['user_password'] == user_passwd:
+                self.user = db_user
+                AES_KEY, AES_IV = self.initAESEncryption(key=user_password)
+                self.sendMsg(self.client_socket, dict({
+                    'AES_IV': AES_IV,
+                    'login_success': f"You are now logged in as '{user_name}'"
+                }))
+                self.AES_KEY, self.AES_IV = AES_KEY, AES_IV
+                return True
+            else:
+                self.sendMsg(self.client_socket, dict({
+                    'login_error': f"Invalid password for account '{user_name}'"
+                }))
+                return False
+        else:
+            self.sendMsg(self.client_socket, dict({
+                'login_error': f"User '{user_name}' not found"
+            }))
+            return False
+
 
 def Main():
     client = Client()
     client.makeConnection()
+    client.authServerConnection()
 
     while True:
         try:

@@ -1,6 +1,8 @@
 import socket
 import sys
+import hashlib
 from pyfiglet import Figlet
+from getpass import getpass
 
 from lib.endpoint import EndPoint
 
@@ -8,6 +10,12 @@ from lib.endpoint import EndPoint
 class Server(EndPoint):
     def __init__(self):
         super().__init__()
+        self.user = dict(
+            user_id="",
+            user_name="",
+            user_password=""
+        )
+
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.startServer()
 
@@ -34,11 +42,34 @@ class Server(EndPoint):
         client_socket.settimeout(10)
         return client_socket, address
 
+    def authClientConnection(self, clientSocket):
+        while True:
+            login_msg: dict = self.receiveMsg(clientSocket)
+
+            if 'login_success' in login_msg.keys():
+                print(f"[+] {login_msg['login_success']}")
+                key = self.user['user_password'].encode('UTF-8')
+                iv = login_msg['AES_IV']
+                self.AES_KEY, self.AES_IV = self.initAESEncryption(key, iv)
+                break
+
+            else:
+                print(f"[-] {login_msg['login_error']}")
+                user_name = input("Enter your username >> ")
+                password = getpass(prompt="Enter your password >> ")
+
+                user = dict({
+                    'user_id': "",
+                    'user_name': user_name,
+                    'user_password': hashlib.sha3_256(password.encode('utf-8')).hexdigest()[:12]
+                })
+                self.user = user
+                self.sendMsg(clientSocket, user)
 
     def getMsgInputToBeSent(self, client_socket, address):
         client_ip_address, client_port = address[0], address[1]
         client_full_address = f"{client_ip_address}:{client_port}"
-        client_user_name = 'client'
+        client_user_name = self.user['user_name'].replace(' ', '_').lower() or 'client'
 
         while True:
             str_msg = input(f"{client_user_name}@{client_full_address} >> ")
@@ -71,6 +102,7 @@ def Main():
     try:
         server = Server()
         client_socket, address = server.acceptConnection()
+        server.authClientConnection(client_socket)
 
         while True:
             msg: dict = server.getMsgInputToBeSent(client_socket, address)
