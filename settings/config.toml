@@ -1,0 +1,25 @@
+[APP]
+APP_NAME = "reverse_shell"
+DESCRIPTION = "Connect to remote machines and execute commands"
+VERSION = "1.0.0"
+UPDATED = ''
+AUTHOR = "Caleb Mwasikira"
+
+[PROJECT]
+ENVIRONMENT = 'development'
+HOST = '127.0.0.1'
+PORT = 9999
+DEBUG = false
+
+[KEYS]
+PRIVATE_KEY_FILE = "keys/private_key.pem"
+PUBLIC_KEY_FILE = "keys/public_key.pem"
+PASSWORD = "password"
+
+[REDIS-DATABASE]
+USER = "john_doe"
+HOST = "127.0.0.1"
+PORT = 6379
+DATABASE = 5
+PASSWORD = ""
+SOCKET_TIMEOUT = ""
