@@ -7,6 +7,7 @@ from getpass import getpass
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
+from database.redis_database import RedisDatabase
 from encryption.rsa_encryption import RSAEncryption
 from urls.__init__ import ROOT
 
@@ -25,6 +26,11 @@ class EndPoint:
         config = self.readConfigFile(conf_filename)
         self.app_conf, project_conf = config['APP'], config['PROJECT']
         keys_conf, redis_db_conf = config['KEYS'], config['REDIS-DATABASE']
+
+        # Connect to a redis-database server
+        self.redis_db = RedisDatabase(
+            db_config=redis_db_conf
+        )
 
         # Ready log books
         log_filename = fr"{ROOT}/logs/log_book.log"
