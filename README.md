@@ -1,21 +1,13 @@
 # reverse_shell_2.0
 **This repository is meant for educational purposes.
-<<<<<<< HEAD
 Any illegal use is strictly forbidden and the writer shall not be held accountable to any persons stupid decisions.**
-=======
-Any illegal use is strictly forbidden and the writer shall not be held accountable to any persons decisions.**
->>>>>>> 55758e5... Implemeted RSA encryption on endpoint; all data being sent across is now encrypted
 
 reverse_shell_2.0 is program where the server sends commands to the client and the client dutifully executes the commands, returning the results to the server.
 
 reverse_shell_2.0 contains 2 main folders/directories and those are server and client folders. 
 File server/server.py (as the name suggests) creates a running instance of a server on your machine
 while file client/client.py creates a client instance that connects to an already running server.
-<<<<<<< HEAD
 **Note that the server should always be run first otherwise the client will have no endpoint to connect to and will exit 'gracefully' with a bunch load of ERRORS!**
-=======
-**Note that the server should always be run first otherwise the client will have no endpoint to connect to and will therefore exit**
->>>>>>> 55758e5... Implemeted RSA encryption on endpoint; all data being sent across is now encrypted
 
 The server is responsible for accepting incoming connections from clients and sending commands to be executed on the clients side.
 The client waits for incomming messages/commands, executes them on the machine (whatever the command is) and returns a result to the server.Result can either be of type succes or fail.
