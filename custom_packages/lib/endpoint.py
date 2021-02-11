@@ -7,9 +7,9 @@ from getpass import getpass
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
-from database.redis_database import RedisDatabase
-from encryption.rsa_encryption import RSAEncryption
-from urls.__init__ import ROOT
+from custom_packages.database.redis_database import RedisDatabase
+from custom_packages.encryption.rsa_encryption import RSAEncryption
+from urls.__init__ import SETTINGS_DIR, LOG_DIR, KEYS_DIR
 
 
 class EndPoint:
@@ -22,7 +22,7 @@ class EndPoint:
         self.colors_RESET = colors.Style.RESET_ALL
 
         # Read config file
-        conf_filename = fr"{ROOT}/settings/config.toml"
+        conf_filename: str = os.path.join(SETTINGS_DIR, "config.toml")
         config = self.readConfigFile(conf_filename)
         self.app_conf, project_conf = config['APP'], config['PROJECT']
         keys_conf, redis_db_conf = config['KEYS'], config['REDIS-DATABASE']
@@ -33,7 +33,7 @@ class EndPoint:
         )
 
         # Ready log books
-        log_filename = fr"{ROOT}/logs/log_book.log"
+        log_filename: str = os.path.join(LOG_DIR, "log_book.log")
         self.logger = self.readyLogBooks(log_filename)
 
         self.HOST = project_conf['HOST']
@@ -49,8 +49,8 @@ class EndPoint:
     @staticmethod
     def initRSAEncryption(keys_conf):
         print(f"[*] Setting up a secure connection")
-        private_key_file: str = os.path.join(ROOT, keys_conf['PRIVATE_KEY_FILE'])
-        public_key_file: str = os.path.join(ROOT, keys_conf['PUBLIC_KEY_FILE'])
+        private_key_file: str = os.path.join(KEYS_DIR, keys_conf['PRIVATE_KEY_FILE'])
+        public_key_file: str = os.path.join(KEYS_DIR, keys_conf['PUBLIC_KEY_FILE'])
         password: str = keys_conf['PASSWORD']
 
         while password is None:
@@ -115,7 +115,6 @@ class EndPoint:
         else:
             raise Exception('Message encryption failed')
 
-
     def receiveMsg(self, _socket):
         BYTES = 1024
         encrypted_data: bytes = _socket.recv(BYTES)
@@ -137,7 +136,6 @@ class EndPoint:
                 raise Exception('Failed to decrypt encrypted message')
         else:
             raise ConnectionResetError("No data received from endpoint. Current connection might be down")
-
 
     def closeConnection(self, socket, HOST, PORT):
         message = f"Closing connection with {HOST}:{PORT}. Connection aborted."

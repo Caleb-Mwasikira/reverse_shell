@@ -4,7 +4,7 @@ from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
 from Crypto.Cipher import PKCS1_OAEP
 
-from urls.__init__ import ROOT
+from urls.__init__ import KEYS_DIR
 
 
 class RSAEncryption:
@@ -115,9 +115,9 @@ class RSAEncryption:
 def Main():
     message = b"My deep dark secrets"
 
-    PRIVATE_KEY_FILE = f"{ROOT}/keys/private_key.pem"
-    PUBLIC_KEY_FILE = f"{ROOT}/keys/public_key.pem"
-    PASSWORD = "Sixteen byte keys"
+    PRIVATE_KEY_FILE = os.path.join(KEYS_DIR, "private_key.pem")
+    PUBLIC_KEY_FILE = os.path.join(KEYS_DIR, "public_key.pem")
+    PASSWORD = "Sixteen byte keys"  # Just a dummy password used for program testing
 
     rsa_encryptor = RSAEncryption()
     private_key = rsa_encryptor.pemLoadKey(PRIVATE_KEY_FILE, PASSWORD)

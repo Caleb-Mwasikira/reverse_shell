@@ -4,7 +4,7 @@ import hashlib
 from pyfiglet import Figlet
 from getpass import getpass
 
-from lib.endpoint import EndPoint
+from custom_packages.lib.endpoint import EndPoint
 
 
 class Server(EndPoint):

@@ -75,9 +75,9 @@ def readConfigFile(config_filepath=fr'{ROOT}/settings/config.toml'):
 def Main():
     # Example user object
     user = dict(
-        user_id= str(uuid4())[:8],
-        user_name= "John Doe",
-        user_password= hashlib.sha3_256("password".encode('utf-8')).hexdigest()[:12]
+        user_id=str(uuid4())[:8],
+        user_name="John Doe",
+        user_password=hashlib.sha3_256("password".encode('utf-8')).hexdigest()[:12]
     )
     db_config = readConfigFile()['REDIS-DATABASE']
     redis_database = RedisDatabase(db_config)
@@ -86,7 +86,6 @@ def Main():
     db_user: dict = redis_database.selectExistingUser(user['user_name'])
     print(db_user)
     # redis_database.deleteExistingUser(user['user_name'])
-
 
 
 if __name__ == "__main__":

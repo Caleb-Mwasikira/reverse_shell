@@ -3,7 +3,7 @@ import sys
 import subprocess
 from pyfiglet import Figlet
 
-from lib.endpoint import EndPoint
+from custom_packages.lib.endpoint import EndPoint
 
 
 class Client(EndPoint):
@@ -66,7 +66,7 @@ class Client(EndPoint):
             print(f"[-] Unidentified user @ {self.HOST}:{self.PORT}! Initiating authentication procedure...")
 
             login_msg = dict(
-                login_error= "Unidentified user! Please login to continue"
+                login_error="Unidentified user! Please login to continue"
             )
             self.sendMsg(self.client_socket, login_msg)
 
@@ -78,7 +78,6 @@ class Client(EndPoint):
                 break
 
     def loginUser(self, user):
-        user_id: str = user['user_id']
         user_name: str = user['user_name']
         user_passwd: str = user['user_password']
         user_password: bytes = user_passwd.encode("UTF-8")
